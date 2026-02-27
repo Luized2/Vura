@@ -1,0 +1,36 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "vura-app",
+  "main": "./src/worker/index.ts",
+  "compatibility_date": "2025-06-17",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "routes": [
+    {
+      "pattern": "vura.me",
+      "custom_domain": true,
+      "zone_name": "vura.me"
+    }
+  ],
+  "observability": {
+    "enabled": true
+  },
+  "assets": {
+    "directory": "./dist/client",
+    "not_found_handling": "single-page-application"
+  },
+  "d1_databases": [
+    {
+      "binding": "vura_db",
+      "database_name": "vura-db",
+      "database_id": "763ee56c-5a6d-418b-bc21-6410cbd51a3f"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "vura_bucket",
+      "bucket_name": "vura-bucket"
+    }
+  ]
+}
