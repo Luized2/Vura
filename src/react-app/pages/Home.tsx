@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router';
 import { ChevronDown, Pencil, Search, Camera, X, Home, Play, Send, User } from 'lucide-react';
+import PaywallPopup, { triggerPaywall } from '@/react-app/components/PaywallPopup';
 
 const messages = [
   {
     id: 1,
-    name: "hellen castro",
+    name: "hellen canalo",
     avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
     message: "Gostei do seu beijo, queria provar de novo... · 48 min",
     hasCamera: true,
@@ -18,7 +20,7 @@ const messages = [
   },
   {
     id: 3,
-    name: "Letícia Eller",
+    name: "Letício ",
     avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop",
     message: "Ontem foi incrível, não consigo parar de pensar... · 9 h",
     hasCamera: true,
@@ -39,14 +41,14 @@ const messages = [
   },
   {
     id: 6,
-    name: "Elivan Carter",
+    name: "Elivan Carneiro",
     avatar: null,
     message: "Enviou um anexo · 2 d",
     hasX: true,
   },
   {
     id: 7,
-    name: "Emicael Miranda",
+    name: "Micael Miranda",
     avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop",
     message: "Eu ri demais dela kkkk · 3 d",
     hasCamera: true,
@@ -91,13 +93,30 @@ const stories = [
 ];
 
 export default function HomePage() {
-  const [username, setUsername] = useState('luiz_eduar3');
+  const location = useLocation();
+  const instagramFromState = (location.state as { instagram?: string })?.instagram;
+  const [username, setUsername] = useState(instagramFromState || 'luiz_eduar3');
+  const [showPaywall, setShowPaywall] = useState(false);
 
   useEffect(() => {
-    const savedUsername = localStorage.getItem('monitoredUsername');
-    if (savedUsername) {
-      setUsername(savedUsername);
+    if (instagramFromState) {
+      localStorage.setItem('monitoredUsername', instagramFromState);
+      setUsername(instagramFromState);
+    } else {
+      const savedUsername = localStorage.getItem('monitoredUsername');
+      if (savedUsername) {
+        setUsername(savedUsername);
+      }
     }
+  }, [instagramFromState]);
+
+  // Mostrar paywall após 2 segundos
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      triggerPaywall();
+      setShowPaywall(true);
+    }, 100000);
+    return () => clearTimeout(timer);
   }, []);
 
   return (
@@ -239,6 +258,10 @@ export default function HomePage() {
 
       {/* Spacer for bottom nav */}
       <div className="h-24"></div>
+
+      {/* ===== PAYWALL POPUP ===== */}
+      {showPaywall && <PaywallPopup />}
     </div>
   );
 }
+
